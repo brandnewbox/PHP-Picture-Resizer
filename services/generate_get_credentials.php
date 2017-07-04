@@ -83,14 +83,21 @@
                                             $GET_file_key,
                                             $config_GET_bucket,
                                             $short_date,
-                                            $long_date);
+                                            $long_date,
+                                            $config_GET_expiration_time_limit,
+                                            $config_service,
+                                            $config_POST_region);
 
   $string_to_sign     = string_to_sign(     $short_date,
                                             $long_date,
-                                            $canonical_request);
+                                            $canonical_request,
+                                            $config_service,
+                                            $config_POST_region);
 
   $signing_key        = signing_key(        $config_secret_access_key,
-                                            $short_date);
+                                            $short_date,
+                                            $config_service,
+                                            $config_POST_region);
 
   $signature          = signature(          $string_to_sign,
                                             $signing_key);
@@ -101,6 +108,8 @@
                                             $short_date,
                                             $long_date,
                                             $config_GET_expiration_time_limit,
-                                            $signature);
+                                            $signature,
+                                            $config_service,
+                                            $config_POST_region);
   echo $signed_GET_url;
 ?>

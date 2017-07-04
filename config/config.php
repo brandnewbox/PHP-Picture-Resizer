@@ -14,7 +14,7 @@
 
   // time limits in seconds
   $config_GET_expiration_time_limit   = "86400";  // 24 hours
-  $config_POST_expiration_time_limit  = "3600";   // 1 hour
+  $config_POST_expiration_time_limit  = "86400";   // 24 hour
 
   // conditions
   $config_key_starts_with             = 'uploads/tmp/';

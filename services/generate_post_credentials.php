@@ -101,10 +101,14 @@
                                           $long_date,
                                           $config_POST_bucket,
                                           $config_key_starts_with,
-                                          $config_acl);
+                                          $config_acl,
+                                          $config_service,
+                                          $config_POST_region);
 
   $signing_key          = signing_key(    $config_secret_access_key,
-                                          $short_date);
+                                          $short_date,
+                                          $config_service,
+                                          $config_POST_region);
 
   $signature            = signature(      $string_to_sign,
                                           $signing_key);
@@ -116,5 +120,7 @@
                                           $config_POST_bucket,
                                           $short_date,
                                           $long_date,
-                                          $config_acl);
+                                          $config_acl,
+                                          $config_service,
+                                          $config_POST_region);
 ?>
