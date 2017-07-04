@@ -21,7 +21,7 @@ exports.handler = function(event, context, callback) {
     var srcKey    =
     decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, " "));
     // you DO need to explicitly name your output bucket
-    var dstBucket = "OUTPUT_BUCKET";
+    var dstBucket = process.env.DESTINATION_S3_BUCKET;
     var dstKey    = "modified-" + srcKey;
 
     // Sanity check: validate that source and destination are different buckets.
