@@ -3,19 +3,65 @@
 ## What does it do?
 This PHP Picture Reszier is a web-based picture resizer service that uses AWS to perform all of the heavy lifting. This service is unique because it allows the user to upload their files directly to a private AWS S3 bucket with all of the proper authentication, and then download those files from a separate private bucket after the resizing is complete, and it does all of this without the user uploading any files to your own personal server(s). This makes the service quite easy to scale, as your server is only really responsible for generating the authentication for each file.
 
-## Start-To-Finish Guide to Setting This Up Yourself:
+## Quick Instructions:
 There are three steps in setting up this service for your own personal use:
-1.  Make an AWS account, and set up an input S3 bucket, a lambda function to process the inputs, an output S3 bucket, and an IAM user with permission to access S3. (Explained further below)
+1.  Make an AWS account, and set up an two S3 buckets (one for the uploaded images, one for the resized images), a lambda function to resize the images, and an IAM user with permission to access S3.
 2.  Setup a PHP server to run your own code off of.
 3.  Download this repository and place it on your server, then update the config file according to your own AWS configuration and credentials.
 
 (This is walkthrough is heavily influenced by the official AWS tutorial found [here](http://docs.aws.amazon.com/lambda/latest/dg/with-s3-example.html), but I think you will find this guide to be faster and easier to follow.)
 
 ### Setting Up AWS
-If you don't already have an AWS account, go ahead and do that first. The free tier should be enough for most people. Then follow the instructions [here](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) to install the AWS Command Line Interface. Of course, you will need this repository downloaded as well.
+If you don't already have an AWS account, go ahead and set one up. Then follow the instructions [here](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) to install the AWS Command Line Interface. Or if you're on a mac, use homebrew!
 
-#### Creating an IAM User
-Once you have your AWS account, go ahead and begin by opening up the **[AWS Management Console](https://aws.amazon.com/console/)** and logging in to your account. Click on the **Services** dropdown in the upper-left corner and then click on **IAM** under the Security, Identity & Compliance heading. Next, click **Users** on the navbar to the left. At the top, click **Add user** to begin creating a new user. Give the user a descriptive name (I'll call mine 'bucket_admin'), then check the box next to **Programatic Access** to ensure your you can use this user through the terminal. Click **Next: Permissions**. The user will only need two policies, so let's attach them directly. Click **Attach existing policies directly** then search for **AmazonS3FullAccess**, check the box next to it. Next search for **AdministratorAccess** and check the box next to that one. Click **Next: Review**. Look over the review to make sure everything looks correct, then click **Create user**. On the next page you should see the Access key ID and Secret access key for the new user. You now need to configure your AWS CLI interface to use this user.
+```
+brew install awscli
+```
+
+#### Create the S3 Buckets
+Open the AWS Management Console. Click on the **Services** dropdown in the upper-left corner and then click on **S3** under the Storage heading. Click **Create bucket**. Give your bucket a descriptive name (like 'my-uploaded-images'), then click **Create**. Repeat this step again with a different name for your output bucket (like 'my-resized-images'). Note: The bucket name must be unique; no two buckets are allowed to have the same name.
+
+#### Create an IAM User to access those buckets
+Open the the **[AWS Management Console](https://aws.amazon.com/console/)**. Click on the **Services** dropdown in the upper-left corner and then click on **IAM** under the Security, Identity & Compliance heading. Next, click **Users** on the navbar to the left. At the top, click **Add user** to begin creating a new user. 
+
+* Give the user a descriptive name (I'll call mine 'my_image_resizer')
+* Check the box next to **Programatic Access** to generate access keys.
+* Click **Next: Permissions**. 
+* The user will only need one policy, so let's attach it directly. Click **Attach existing policies directly**.
+* Click **Create policy**
+* Click **Create Your Own Policy**
+* Name it something like "resizer-buckets-access"
+* Describe it something like "Allows access to the two buckets we use to resize images using AWS lambda"
+* Update the policy document to look like the following, but use your bucket names:
+
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::my-uploaded-images",
+        "arn:aws:s3:::my-uploaded-images/*",
+        "arn:aws:s3:::my-resized-images",
+        "arn:aws:s3:::my-resized-images/*"
+      ]
+    }
+  ]
+}
+```
+
+* Click **Create**, which will close the window
+* Click **Refresh** and search for the name of your policy (resizer-buckets-access)
+* Check the box next to it. 
+* Click **Next: Review**. Look over the review to make sure everything looks correct.
+* Click **Create user**. 
+
+On the next page you should see the Access key ID and Secret access key for the new user. Copy this information down.
+
+
+
 
 Do this by entering your .aws directory (probably at: ~/.aws) and modify your config file with a text editor to add the following (using your own user's name and region):
 ```
@@ -31,9 +77,6 @@ aws_secret_access_key = YOUR_SECRET_ACCESS_KEY_HERE
 ```
 
 You can delete and regenerate these keys later if you need to, but it would probably be better to just put them somewhere safe.
-
-#### Creating the S3 Buckets
-Return to the AWS Management Console. Click on the **Services** dropdown in the upper-left corner and then click on **S3** under the Storage heading. Click **Create bucket**. Give your bucket a descriptive name (like 'image-input-bucket'), then click **Create**. Repeat this step again with a different name for your output bucket. Note: The bucket name must be unique; no two buckets are allowed to have the same name.
 
 ##### Change the CORS Configuration on the Output Bucket
 After you have created your output bucket, select it from the menu on the **S3** page in the AWS Management Console. Go to the **Permissions** tab. Click on **CORS configuration**. Change the line that looks like 
