@@ -71,24 +71,6 @@ The PHP script requires credentials for a user that can access both buckets crea
 
 On the next page you should see the Access key ID and Secret access key for the new user. Copy this information down.
 
-
-
-
-Do this by entering your .aws directory (probably at: ~/.aws) and modify your config file with a text editor to add the following (using your own user's name and region):
-```
-[bucket_admin]
-output = text
-region = YOUR_REGION_CODE(ex: us-east-1)
-```
-Now you need to modify your credentials file. Open it up with a text editor and add the following to the end using the Access key ID and Secret access key you were just provided:
-```
-[bucket_admin]
-aws_access_key_id = YOUR_ACCESS_KEY_ID_HERE
-aws_secret_access_key = YOUR_SECRET_ACCESS_KEY_HERE
-```
-
-You can delete and regenerate these keys later if you need to, but it would probably be better to just put them somewhere safe.
-
 ##### Change the CORS Configuration on the Output Bucket
 After you have created your output bucket, select it from the menu on the **S3** page in the AWS Management Console. Go to the **Permissions** tab. Click on **CORS configuration**. Change the line that looks like 
 ```
@@ -99,10 +81,7 @@ to instead say
     <AllowedHeader>*</AllowedHeader>
 ```
 
-#### Creating the Lambda Function
-To create the lambda function, we will start with writing the code the function will execute. AWS Lambda supports several languages for it's functions, but I have found Node.js to be the most painless.
-
-##### Building the Function Code in Node.js
+##### Build the Lambda Function Code in Node.js
 
 Let's build the Lambda function that will resize our images for us as they get uploaded.
 
@@ -112,7 +91,7 @@ Let's build the Lambda function that will resize our images for us as they get u
 1. Click **Blank Function**
 1. Select **S3** from the itegrations dropdown
 1. Select your input bucket (i.e. my-uploaded-images) from the Bucket dropdown
-1. Select "Object Added (All) from the Event Type dropdown
+1. Select "Object Created (All) from the Event Type dropdown
 1. Click **Next**
 1. Name the function "ResizeUploadedImages"
 1. Describe it as "Scale images from one bucket to the other"
@@ -120,47 +99,9 @@ Let's build the Lambda function that will resize our images for us as they get u
 1. Copy and paste the code from `lambda_function/image_resizer.js`
 1. Add an environment variable for `DESTINATION_S3_BUCKET` and set the value to your destination bucket (i.e. my-resized-images)
 1. Select "Create new role from template(s)" from the Role dropdown
-1. Provide a Role name like: "myLambdaResizer"
+1. Provide a Role name like: "myLambdaImageResizer"
 1. Click **Next**
-
-
-##### Creating the Lambda Execution Role in IAM
-Return to the AWS Management Console. Click on the **Services** dropdown in the upper-left corner and then click on **IAM** under the Security, Identity & Compliacnce heading. Now click on **Roles** on the navbar to the left. Click **Create new role**. Find **AWS Lambda** from the list under AWS Service Role, and click the **Select** button next to it. Find the policy **AWSLambdaExecute**, check the box next to it, then click **Next Step**. Give the role a detailed name (such as 'lambda_execution_role'), then click **Create role**.
-
-##### Creating the Lambda Function on AWS
-Open up your terminal and enter in the following command:
-```
-aws lambda create-function \
---region YOUR_REGION_CODE(ex: us-east-1) \
---function-name YOUR_LAMBDA_FUNCTION_NAME(ex: lambda_image_resizer) \
---zip-file fileb://path/to/your/zipfile.zip(ex: fileb://~/Documents/PHP-Picture-Resizer/lambda_function/image_resizer.zip) \
---role EXECUTION_ROLE_ARN(on the role's iam page, ex: arn:aws:iam::123412341234:role/lambda_execution_role) \
---handler NAME_OF_YOUR_JS_FILE.FUNCTION_TO_CALL_FROM_JS_FILE(ex: image_resizer.handler) \
---runtime nodejs6.10 \
---profile IAM_PROFILE_NAME(ex. bucket_admin)  \
---timeout 10 \
---memory-size 1024
-```
-
-#### Add the Event Source
-All that's left now is to give the lambda function the proper permission to execute on an S3 event, and to tell our input bucket to notify the lambda function whenever an object is placed in it.
-
-##### Add Execution Permission to Lambda Function
-Run the following command, substituting in your own information into all the angle-bracket spaces:
-```
-aws lambda add-permission \
---function-name YOUR_LAMBDA_FUNCTION_NAME(ex: lambda_image_resizer) \
---region YOUR_REGION_CODE(ex: us-east-1) \
---statement-id SOME_RANDOM_UNIQUE_ID(ex. my_image_resizer_123456789) \
---action "lambda:InvokeFunction" \
---principal s3.amazonaws.com \
---source-arn arn:aws:s3:::YOUR_INPUT_BUCKET_NAME \
---source-account BUCKET_OWNER_ACCOUNT_ID(found in top right corner in AWS Management Console, ex: 123412341234) \
---profile IAM_PROFILE_NAME(ex. bucket_admin)
-```
-
-##### Add Lambda Notification to S3 Bucket
-Return to the AWS Management Console. Click on the **Services** dropdown in the upper-left corner and then click on **S3** under the Storage heading. Click on your input bucket. Click the **Properties** tab. Click the **Events** box underneath Advanced Settings. Click **Add notification**. Give the event a name (such as lambda_notifier). Check the box next to **ObjectCreate (All)**. Select **Lambda Function** from the **Send to** dropdown. Select your lambda funtion from the **Lambda** dropdown. Click **Save**.
+1. Review the information and click click **Create Function**
 
 ### Setting Up a PHP Server
 Lots of variety here. Probably look around for your PHP server implementation of choice and follow their instructions. For the purpose of this guide, the important things is just that you do this. For setting up a localhost server, I found [this guide](https://lukearmstrong.github.io/2016/12/setup-apache-mysql-php-homebrew-macos-sierra/) to be very helpful (I used the php70 instructions).
