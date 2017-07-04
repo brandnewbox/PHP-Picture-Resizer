@@ -19,20 +19,27 @@ brew install awscli
 ```
 
 #### Create the S3 Buckets
-Open the AWS Management Console. Click on the **Services** dropdown in the upper-left corner and then click on **S3** under the Storage heading. Click **Create bucket**. Give your bucket a descriptive name (like 'my-uploaded-images'), then click **Create**. Repeat this step again with a different name for your output bucket (like 'my-resized-images'). Note: The bucket name must be unique; no two buckets are allowed to have the same name.
+
+1. Open the AWS Management Console. 
+1. Click on the **Services** dropdown in the upper-left corner and then click on **S3** under the Storage heading. 
+1. Click **Create bucket**. 
+1. Give your bucket a descriptive name (like 'my-uploaded-images'), then click **Create**. 
+1. Repeat this step again with a different name for your output bucket (like 'my-resized-images').
 
 #### Create an IAM User to access those buckets
-Open the the **[AWS Management Console](https://aws.amazon.com/console/)**. Click on the **Services** dropdown in the upper-left corner and then click on **IAM** under the Security, Identity & Compliance heading. Next, click **Users** on the navbar to the left. At the top, click **Add user** to begin creating a new user. 
 
-* Give the user a descriptive name (I'll call mine 'my_image_resizer')
-* Check the box next to **Programatic Access** to generate access keys.
-* Click **Next: Permissions**. 
-* The user will only need one policy, so let's attach it directly. Click **Attach existing policies directly**.
-* Click **Create policy**
-* Click **Create Your Own Policy**
-* Name it something like "resizer-buckets-access"
-* Describe it something like "Allows access to the two buckets we use to resize images using AWS lambda"
-* Update the policy document to look like the following, but use your bucket names:
+1. Open the the **[AWS Management Console](https://aws.amazon.com/console/)**. 
+1. Click on the **Services** dropdown in the upper-left corner and then click on **IAM** under the Security, Identity & Compliance heading. 
+1. Next, click **Users** on the navbar to the left. At the top, click **Add user** to begin creating a new user. 
+1. Give the user a descriptive name (I'll call mine 'my_image_resizer')
+1. Check the box next to **Programatic Access** to generate access keys.
+1. Click **Next: Permissions**. 
+1. The user will only need one policy, so let's attach it directly. Click **Attach existing policies directly**.
+1. Click **Create policy**
+1. Click **Create Your Own Policy**
+1. Name it something like "resizer-buckets-access"
+1. Describe it something like "Allows access to the two buckets we use to resize images using AWS lambda"
+1. Update the policy document to look like the following, but use your bucket names:
 
 ```
 {
@@ -52,11 +59,11 @@ Open the the **[AWS Management Console](https://aws.amazon.com/console/)**. Clic
 }
 ```
 
-* Click **Create**, which will close the window
-* Click **Refresh** and search for the name of your policy (resizer-buckets-access)
-* Check the box next to it. 
-* Click **Next: Review**. Look over the review to make sure everything looks correct.
-* Click **Create user**. 
+1. Click **Create**, which will close the window
+1. Click **Refresh** and search for the name of your policy (resizer-buckets-access)
+1. Check the box next to it. 
+1. Click **Next: Review**. Look over the review to make sure everything looks correct.
+1. Click **Create user**. 
 
 On the next page you should see the Access key ID and Secret access key for the new user. Copy this information down.
 
