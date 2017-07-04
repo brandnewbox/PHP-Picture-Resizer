@@ -41,23 +41,23 @@ brew install awscli
 1. Describe it something like "Allows access to the two buckets we use to resize images using AWS lambda"
 1. Update the policy document to look like the following, but use your bucket names:
 
-```
-{
-  "Version": "2012-10-17",
-  "Statement": [
+    ```
     {
-      "Effect": "Allow",
-      "Action": "s3:*",
-      "Resource": [
-        "arn:aws:s3:::my-uploaded-images",
-        "arn:aws:s3:::my-uploaded-images/*",
-        "arn:aws:s3:::my-resized-images",
-        "arn:aws:s3:::my-resized-images/*"
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "s3:*",
+          "Resource": [
+            "arn:aws:s3:::my-uploaded-images",
+            "arn:aws:s3:::my-uploaded-images/*",
+            "arn:aws:s3:::my-resized-images",
+            "arn:aws:s3:::my-resized-images/*"
+          ]
+        }
       ]
     }
-  ]
-}
-```
+    ```
 
 1. Click **Create**, which will close the window
 1. Click **Refresh** and search for the name of your policy (resizer-buckets-access)
