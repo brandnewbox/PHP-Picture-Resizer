@@ -133,6 +133,7 @@ You can use the included zip file, orbuild the Lambda function that will resize 
 1. Click **Next**
 1. Name the function "ResizeUploadedImages"
 1. Describe it as "Scale images from one bucket to the other"
+1. Advanced settings: Timout increase to 1 min 0 sec so that there is plenty of time to resize larger images.
 1. Select Node.js 6.10 from the Runtime dropdown
 1. Select "Code entry type" from the Code entry type dropdown
 1. Select the image_resizer.zip for the Function package
