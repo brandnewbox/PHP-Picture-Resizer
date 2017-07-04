@@ -5,9 +5,9 @@ This PHP Picture Reszier is a web-based picture resizer service that uses AWS to
 
 ## Quick Instructions:
 There are three steps in setting up this service for your own personal use:
-1.  Make an AWS account, and set up an two S3 buckets (one for the uploaded images, one for the resized images), a lambda function to resize the images, and an IAM user with permission to access S3.
-2.  Setup a PHP server to run your own code off of.
-3.  Download this repository and place it on your server, then update the config file according to your own AWS configuration and credentials.
+#. Make an AWS account, and set up an two S3 buckets (one for the uploaded images, one for the resized images), a lambda function to resize the images, and an IAM user with permission to access S3.
+#. Setup a PHP server to run your own code off of.
+#. Download this repository and place it on your server, then update the config file according to your own AWS configuration and credentials.
 
 (This is walkthrough is heavily influenced by the official AWS tutorial found [here](http://docs.aws.amazon.com/lambda/latest/dg/with-s3-example.html), but I think you will find this guide to be faster and easier to follow.)
 
