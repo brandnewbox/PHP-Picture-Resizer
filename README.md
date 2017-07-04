@@ -20,6 +20,8 @@ brew install awscli
 
 #### Create the S3 Buckets
 
+For this tool we need two buckets. One for uploading images directly to. The other bucket is for storing the resized images on.
+
 1. Open the AWS Management Console. 
 1. Click on the **Services** dropdown in the upper-left corner and then click on **S3** under the Storage heading. 
 1. Click **Create bucket**. 
@@ -27,6 +29,8 @@ brew install awscli
 1. Repeat this step again with a different name for your output bucket (like 'my-resized-images').
 
 #### Create an IAM User to access those buckets
+
+The PHP script requires credentials for a user that can access both buckets created above. For security purposes we are only going to give the user access to these buckets (and not carte blanche access to all of our S3 buckets)
 
 1. Open the the **[AWS Management Console](https://aws.amazon.com/console/)**. 
 1. Click on the **Services** dropdown in the upper-left corner and then click on **IAM** under the Security, Identity & Compliance heading. 
@@ -99,19 +103,26 @@ to instead say
 To create the lambda function, we will start with writing the code the function will execute. AWS Lambda supports several languages for it's functions, but I have found Node.js to be the most painless.
 
 ##### Building the Function Code in Node.js
-Start by installing [Node.js]() to your machine. After you have finished installing Node.js, you will need to install the following three dependencies:
-* AWS SDK for JavaScript in Node.js (AWS already has this installed on their end, you won't need it when you upload to Lambda later)
-* gm, GraphicsMagick for node.js
-* Async utility module
 
-Enter terminal on your machine, navigate to the lambda_function folder from within your copy of PHP Picture Resizer that you downloaded earlier, then type the following command to install your dependencies to the node_modules directory:
-```
-npm install aws-sdk gm async
-```
-Now open the **image_resizer.js** file within the **lambda_function** folder in the PHP Picture Resizer repository. Find the **dstBucket** variable initialization and change **"OUTPUT_BUCKET"** to whatever you named your output bucket. Finally, zip up the **image_resizer.js** file and the **node_modules** folder into a single .zip file (ex. image_resizer.zip) using the following command:
-```
-zip -r image_resizer.zip /path/to/node_modules /path/to/image_resizer.js
-```
+Let's build the Lambda function that will resize our images for us as they get uploaded.
+
+1. Open the the **[AWS Management Console](https://aws.amazon.com/console/)**. 
+1. Click on the **Services** dropdown in the upper-left corner and then click on **Lambda** under the Compute heading. 
+1. Click **Create a Lambda function**
+1. Click **Blank Function**
+1. Select **S3** from the itegrations dropdown
+1. Select your input bucket (i.e. my-uploaded-images) from the Bucket dropdown
+1. Select "Object Added (All) from the Event Type dropdown
+1. Click **Next**
+1. Name the function "ResizeUploadedImages"
+1. Describe it as "Scale images from one bucket to the other"
+1. Select Node.js 6.10 from the Runtime dropdown
+1. Copy and paste the code from `lambda_function/image_resizer.js`
+1. Add an environment variable for `DESTINATION_S3_BUCKET` and set the value to your destination bucket (i.e. my-resized-images)
+1. Select "Create new role from template(s)" from the Role dropdown
+1. Provide a Role name like: "myLambdaResizer"
+1. Click **Next**
+
 
 ##### Creating the Lambda Execution Role in IAM
 Return to the AWS Management Console. Click on the **Services** dropdown in the upper-left corner and then click on **IAM** under the Security, Identity & Compliacnce heading. Now click on **Roles** on the navbar to the left. Click **Create new role**. Find **AWS Lambda** from the list under AWS Service Role, and click the **Select** button next to it. Find the policy **AWSLambdaExecute**, check the box next to it, then click **Next Step**. Give the role a detailed name (such as 'lambda_execution_role'), then click **Create role**.
