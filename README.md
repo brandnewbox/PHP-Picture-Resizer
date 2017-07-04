@@ -89,7 +89,13 @@ to instead say
 
 ##### Build the Lambda Function Code in Node.js
 
-Let's build the Lambda function that will resize our images for us as they get uploaded.
+You can use the included zip file, orbuild the Lambda function that will resize our images for us as they get uploaded by hand.
+
+1. move to the lambda_function directory in this project
+1. Run `npm install --prefix . aws-sdk gm async` to install the dependent modules.
+1. Run `zip -r image_resizer.zip node_modules image_resizer.js`
+
+##### Upload the Lambda Function
 
 1. Open the the **[AWS Management Console](https://aws.amazon.com/console/)**. 
 1. Click on the **Services** dropdown in the upper-left corner and then click on **Lambda** under the Compute heading. 
@@ -102,12 +108,23 @@ Let's build the Lambda function that will resize our images for us as they get u
 1. Name the function "ResizeUploadedImages"
 1. Describe it as "Scale images from one bucket to the other"
 1. Select Node.js 6.10 from the Runtime dropdown
-1. Copy and paste the code from `lambda_function/image_resizer.js`
+1. Select "Code entry type" from the Code entry type dropdown
+1. Select the image_resizer.zip for the Function package
 1. Add an environment variable for `DESTINATION_S3_BUCKET` and set the value to your destination bucket (i.e. my-resized-images)
+1. For the Handler, enter `image_resizer.
 1. Select "Create new role from template(s)" from the Role dropdown
 1. Provide a Role name like: "myLambdaImageResizer"
 1. Click **Next**
 1. Review the information and click click **Create Function**
+
+#### Grant Access To Buckets to Role
+
+1. Open IAM
+1. Select Roles
+1. Select the role you just created (i.e. 'myLambdaImageResizer')
+1. Click Attach Policy
+1. Search for the policy created earlier (resizer-buckets-access)
+1. Check the checkbox and click "Attach Policy"
 
 ### Setting Up a PHP Server
 Lots of variety here. Probably look around for your PHP server implementation of choice and follow their instructions. For the purpose of this guide, the important things is just that you do this. For setting up a localhost server, I found [this guide](https://lukearmstrong.github.io/2016/12/setup-apache-mysql-php-homebrew-macos-sierra/) to be very helpful (I used the php70 instructions).
