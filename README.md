@@ -25,8 +25,34 @@ For this tool we need two buckets. One for uploading images directly to. The oth
 1. Open the AWS Management Console. 
 1. Click on the **Services** dropdown in the upper-left corner and then click on **S3** under the Storage heading. 
 1. Click **Create bucket**. 
-1. Give your bucket a descriptive name (like 'my-uploaded-images'), then click **Create**. 
+1. Give your bucket a descriptive name (like 'my-uploaded-images'), then click **Create**.
+1. Modify CORS
+
+```
+<!-- Sample policy -->
+<CORSConfiguration>
+	<CORSRule>
+		<AllowedOrigin>http://mydomain.com</AllowedOrigin>
+		<AllowedMethod>POST</AllowedMethod>
+		<MaxAgeSeconds>3000</MaxAgeSeconds>
+		<AllowedHeader>*</AllowedHeader>
+	</CORSRule>
+</CORSConfiguration>
+```
+
 1. Repeat this step again with a different name for your output bucket (like 'my-resized-images').
+1. Modify CORS
+
+```
+<CORSConfiguration>
+	<CORSRule>
+		<AllowedOrigin>*</AllowedOrigin>
+		<AllowedMethod>GET</AllowedMethod>
+		<MaxAgeSeconds>3000</MaxAgeSeconds>
+		<AllowedHeader>*</AllowedHeader>
+	</CORSRule>
+</CORSConfiguration>
+```
 
 #### Create an IAM User to access those buckets
 
@@ -107,6 +133,7 @@ You can use the included zip file, orbuild the Lambda function that will resize 
 1. Click **Next**
 1. Name the function "ResizeUploadedImages"
 1. Describe it as "Scale images from one bucket to the other"
+1. Advanced settings: Timout increase to 1 min 0 sec so that there is plenty of time to resize larger images.
 1. Select Node.js 6.10 from the Runtime dropdown
 1. Select "Code entry type" from the Code entry type dropdown
 1. Select the image_resizer.zip for the Function package
