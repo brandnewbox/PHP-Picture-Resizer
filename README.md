@@ -58,6 +58,12 @@ The PHP script requires credentials for a user that can access both buckets crea
             "arn:aws:s3:::my-resized-images",
             "arn:aws:s3:::my-resized-images/*"
           ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": "s3:ListAllMyBuckets",
+          "Resource": "*",
+          "Condition": {}
         }
       ]
     }
