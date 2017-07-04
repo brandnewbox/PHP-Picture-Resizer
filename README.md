@@ -25,8 +25,34 @@ For this tool we need two buckets. One for uploading images directly to. The oth
 1. Open the AWS Management Console. 
 1. Click on the **Services** dropdown in the upper-left corner and then click on **S3** under the Storage heading. 
 1. Click **Create bucket**. 
-1. Give your bucket a descriptive name (like 'my-uploaded-images'), then click **Create**. 
+1. Give your bucket a descriptive name (like 'my-uploaded-images'), then click **Create**.
+1. Modify CORS
+
+```
+<!-- Sample policy -->
+<CORSConfiguration>
+	<CORSRule>
+		<AllowedOrigin>http://mydomain.com</AllowedOrigin>
+		<AllowedMethod>POST</AllowedMethod>
+		<MaxAgeSeconds>3000</MaxAgeSeconds>
+		<AllowedHeader>*</AllowedHeader>
+	</CORSRule>
+</CORSConfiguration>
+```
+
 1. Repeat this step again with a different name for your output bucket (like 'my-resized-images').
+1. Modify CORS
+
+```
+<CORSConfiguration>
+	<CORSRule>
+		<AllowedOrigin>*</AllowedOrigin>
+		<AllowedMethod>GET</AllowedMethod>
+		<MaxAgeSeconds>3000</MaxAgeSeconds>
+		<AllowedHeader>*</AllowedHeader>
+	</CORSRule>
+</CORSConfiguration>
+```
 
 #### Create an IAM User to access those buckets
 
