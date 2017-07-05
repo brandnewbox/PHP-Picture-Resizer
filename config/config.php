@@ -8,9 +8,9 @@
 
   // s3 buckets
   $config_POST_region                 = 'us-east-1';
-  $config_POST_bucket                 = 'input_bucket';
+  $config_POST_bucket                 = 'my-uploaded-images';
   $config_GET_region                  = 'us-east-1';
-  $config_GET_bucket                  = 'output_bucket';
+  $config_GET_bucket                  = 'my-resized-images';
 
   // time limits in seconds
   $config_GET_expiration_time_limit   = "86400";  // 24 hours

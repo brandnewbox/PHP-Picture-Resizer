@@ -1,52 +1,48 @@
-# Lightweight Web-Based Picture Resizer Service
+# PHP, AWS S3 and AWS Lambda Image Scaling Tool
 
 ## What does it do?
-This PHP Picture Reszier is a web-based picture resizer service that uses AWS to perform all of the heavy lifting. This service is unique because it allows the user to upload their files directly to a private AWS S3 bucket with all of the proper authentication, and then download those files from a separate private bucket after the resizing is complete, and it does all of this without the user uploading any files to your own personal server(s). This makes the service quite easy to scale, as your server is only really responsible for generating the authentication for each file.
+This is a single webpage that uses PHP to generate AWS signatures to upload images directly to S3. Once on S3, the images are resized by AWS Lambda and sent to another S3 bucket. The webpage waits for the images to appear on that bucket then provides a download link to the user.
 
-## Quick Instructions:
-There are three steps in setting up this service for your own personal use:
-1. Make an AWS account, and set up an two S3 buckets (one for the uploaded images, one for the resized images), a lambda function to resize the images, and an IAM user with permission to access S3.
-1. Setup a PHP server to run your own code off of.
-1. Download this repository and place it on your server, then update the config file according to your own AWS configuration and credentials.
+Use it as a stand alone tool, or tear into the PHP and tweak it to your needs.
 
-(This is walkthrough is heavily influenced by the official AWS tutorial found [here](http://docs.aws.amazon.com/lambda/latest/dg/with-s3-example.html), but I think you will find this guide to be faster and easier to follow.)
+AWS performs all of the heavy lifting which makes the service scalable, as the only thing your server is responsible for is generating the authentication credentials.
 
-### Setting Up AWS
-If you don't already have an AWS account, go ahead and set one up. Then follow the instructions [here](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) to install the AWS Command Line Interface. Or if you're on a mac, use homebrew!
+### Create the S3 Upload Bucket
 
-```
-brew install awscli
-```
-
-#### Create the S3 Buckets
-
-For this tool we need two buckets. One for uploading images directly to. The other bucket is for storing the resized images on.
+For this tool we will need two buckets. The first one is for uploading images directly from our webpage. 
 
 1. Open the AWS Management Console. 
 1. Click on the **Services** dropdown in the upper-left corner and then click on **S3** under the Storage heading. 
 1. Click **Create bucket**. 
-1. Give your bucket a descriptive name (like 'my-uploaded-images'), then click **Create**.
-1. Modify CORS
+1. Give your bucket a descriptive name (like 'my-uploaded-images'), pick your region, then click **Create**.
+1. Click the Permissions tab, and then the CORS configuration option. 
+1. Enter the configurtion below, replacing `mydomain.com` with your domain, and click Save. This CORS configration allows our webpage to upload images directly to S3.
+
+    ```
+    <!-- Sample policy -->
+    <CORSConfiguration>
+    	<CORSRule>
+    		<AllowedOrigin>http://mydomain.com</AllowedOrigin>
+    		<AllowedMethod>POST</AllowedMethod>
+    		<MaxAgeSeconds>3000</MaxAgeSeconds>
+    		<AllowedHeader>*</AllowedHeader>
+    	</CORSRule>
+    </CORSConfiguration>
+    ```
+
+1. Copy the bucket name and region into `$config_POST_region` and `$config_POST_bucket` in the `config/config.php` file.
+
+### Create the S3 Resize Bucket
+
+The second bucket is for storing the images that are resized by Lambda.
+
+1. Repeat the above steps again with a different name for your resize bucket (like 'my-resized-images').
+1. Enter the CORS configurtion below, replacing `mydomain.com` with your domain, and click Save. This CORS configuration allows our webpage to ping resized images to see if they exist.
 
 ```
-<!-- Sample policy -->
 <CORSConfiguration>
 	<CORSRule>
 		<AllowedOrigin>http://mydomain.com</AllowedOrigin>
-		<AllowedMethod>POST</AllowedMethod>
-		<MaxAgeSeconds>3000</MaxAgeSeconds>
-		<AllowedHeader>*</AllowedHeader>
-	</CORSRule>
-</CORSConfiguration>
-```
-
-1. Repeat this step again with a different name for your output bucket (like 'my-resized-images').
-1. Modify CORS
-
-```
-<CORSConfiguration>
-	<CORSRule>
-		<AllowedOrigin>*</AllowedOrigin>
 		<AllowedMethod>GET</AllowedMethod>
 		<MaxAgeSeconds>3000</MaxAgeSeconds>
 		<AllowedHeader>*</AllowedHeader>
@@ -54,9 +50,11 @@ For this tool we need two buckets. One for uploading images directly to. The oth
 </CORSConfiguration>
 ```
 
-#### Create an IAM User to access those buckets
+1. Copy the bucket name and region into `$config_GET_region` and `$config_GET_bucket` in the `config/config.php` file.
 
-The PHP script requires credentials for a user that can access both buckets created above. For security purposes we are only going to give the user access to these buckets (and not carte blanche access to all of our S3 buckets)
+### Create an IAM User to access those buckets
+
+The PHP script requires credentials for a user that can access both buckets created above. For security purposes we are only going to give the user access to these buckets (and not carte blanche access to all of our S3 buckets).
 
 1. Open the the **[AWS Management Console](https://aws.amazon.com/console/)**. 
 1. Click on the **Services** dropdown in the upper-left corner and then click on **IAM** under the Security, Identity & Compliance heading. 
@@ -101,27 +99,19 @@ The PHP script requires credentials for a user that can access both buckets crea
 1. Click **Next: Review**. Look over the review to make sure everything looks correct.
 1. Click **Create user**. 
 
-On the next page you should see the Access key ID and Secret access key for the new user. Copy this information down.
+On the next page you should see the Access key ID and Secret access key for the new user. Copy this information into the `$config_access_key_id` and `$config_secret_access_key` variables in `config/config.php` file.
 
-##### Change the CORS Configuration on the Output Bucket
-After you have created your output bucket, select it from the menu on the **S3** page in the AWS Management Console. Go to the **Permissions** tab. Click on **CORS configuration**. Change the line that looks like 
-```
-    <AllowedHeader>Authorization</AllowedHeader>
-```
-to instead say
-```
-    <AllowedHeader>*</AllowedHeader>
-```
+### (Optional) Build the Lambda Function Code in Node.js
 
-##### Build the Lambda Function Code in Node.js
+You can use the included zip file, or build the Lambda function that will resize our images for us as they get uploaded by hand.
 
-You can use the included zip file, orbuild the Lambda function that will resize our images for us as they get uploaded by hand.
-
-1. move to the lambda_function directory in this project
+1. `cd` into the `lambda_function` directory in this project
 1. Run `npm install --prefix . aws-sdk gm async` to install the dependent modules.
 1. Run `zip -r image_resizer.zip node_modules image_resizer.js`
 
-##### Upload the Lambda Function
+### Upload the Lambda Function
+
+The following steps install the Lambda function that watches the upload bucket for new images, then resizes them and places them on the resize bucket.
 
 1. Open the the **[AWS Management Console](https://aws.amazon.com/console/)**. 
 1. Click on the **Services** dropdown in the upper-left corner and then click on **Lambda** under the Compute heading. 
@@ -144,7 +134,9 @@ You can use the included zip file, orbuild the Lambda function that will resize 
 1. Click **Next**
 1. Review the information and click click **Create Function**
 
-#### Grant Access To Buckets to Role
+### Grant Access To Buckets to Lambda Role
+
+The Lambda function we created above needs to be given permission to access your S3 buckets. Fortunately, we already created a policy that allows this.
 
 1. Open IAM
 1. Select Roles
@@ -153,12 +145,6 @@ You can use the included zip file, orbuild the Lambda function that will resize 
 1. Search for the policy created earlier (resizer-buckets-access)
 1. Check the checkbox and click "Attach Policy"
 
-### Setting Up a PHP Server
-Lots of variety here. Probably look around for your PHP server implementation of choice and follow their instructions. For the purpose of this guide, the important things is just that you do this. For setting up a localhost server, I found [this guide](https://lukearmstrong.github.io/2016/12/setup-apache-mysql-php-homebrew-macos-sierra/) to be very helpful (I used the php70 instructions).
+### Deploy
 
-### Installing and Configuring the PHP Picture Resizer
-You're almost done!
-
-Open up the **config.php** file within the config folder and change all of the information within to match all of your own AWS information.
-
-Now just transfer your PHP Picture Resizer repository onto your PHP server, and you should be good to go! Try it out!
+By now you should have all the configuration information you need in your `config.php` file. So just transfer your PHP Picture Resizer repository onto your PHP server, and you should be good to go!
