@@ -1,22 +1,7 @@
 <html>
 <head>
+  <title>Resizer</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <script
-  src="https://code.jquery.com/jquery-3.2.1.min.js"
-  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-  crossorigin="anonymous"></script>
-  <!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
-  <script
-  src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"
-  integrity="sha256-xNjb53/rY+WmG+4L6tTl9m6PpqknWZvRt0rO1SRnJzw="
-  crossorigin="anonymous"></script>
-  <!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
-  <script src="https://cdn.jsdelivr.net/jquery.fileupload/9.9.0/js/jquery.iframe-transport.js"></script>
-  <!-- The basic File Upload plugin -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.18.0/js/jquery.fileupload.js"></script>
-  <script src="assets/javascript.js"></script>
-
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.18.0/css/jquery.fileupload.css">
   <link rel="stylesheet" href="assets/styles.css">
@@ -60,5 +45,12 @@
       <p id="progress-filename" class="progress-filename col-xs-2 col-offset-xs-10"></p>
     </div>
   </div>
+
+
+  <script src="assets/jquery.min.js"></script>
+  <script src="assets/jquery.ui.widget.js"></script>
+  <script src="assets/jquery.iframe-transport.js"></script>
+  <script src="assets/jquery.fileupload.js"></script>
+  <script src="assets/javascript.js"></script>
 </body>
 </html>
