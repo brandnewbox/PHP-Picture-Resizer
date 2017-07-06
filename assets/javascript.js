@@ -58,7 +58,6 @@ function save_data_to_form(data) {
   $('#file_upload').find('input[name=AWSAccessKeyId]').val(data.AWSAccessKeyId);
   $('#file_upload').find('input[name=acl]').val(data.acl);
   $('#file_upload').find('input[name=success_action_status]').val(data.success_action_status);
-  $('#file_upload').find('input[name=success_action_redirect]').val(data.success_action_redirect);
   $('#file_upload').find('input[name=Policy]').val(data.Policy);
   $('#file_upload').find('input[name=X-Amz-Signature]').val(data.XAmzSignature);
   $('#file_upload').find('input[name=x-amz-meta-tag]').val(data.XAmzMetaTag);

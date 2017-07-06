@@ -38,15 +38,12 @@
 
     <input type="hidden" name="key" value="" />
     <input type="hidden" name="acl" value="" />
-    <input type="hidden" name="success_action_redirect" value="" />
-
     <input type="hidden" name="Content-Type" value="" />
     <input type="hidden" name="x-amz-meta-uuid" value="" />
     <input type="hidden" name="x-amz-server-side-encryption" value="" />
     <input type="hidden" name="X-Amz-Credential" value="" />
     <input type="hidden" name="X-Amz-Algorithm" value="" />
     <input type="hidden" name="X-Amz-Date" value="" />
-
     <input type="hidden" name="x-amz-meta-tag" value="" />
     <input type="hidden" name="Policy" value='' />
     <input type="hidden" name="X-Amz-Signature" value="" />

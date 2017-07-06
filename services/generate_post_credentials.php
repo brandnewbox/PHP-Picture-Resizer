@@ -39,7 +39,6 @@
     {\"bucket\": \"$bucket\"},\r
     [\"starts-with\", \"\$key\", \"$key_starts_with\"],\r
     {\"acl\": \"$acl\"},\r
-    {\"success_action_redirect\": \"http://$bucket.s3.amazonaws.com/\"},\r
     [\"starts-with\", \"\$Content-Type\", \"\"],\r
     {\"x-amz-meta-uuid\": \"14365123651274\"},\r
     {\"x-amz-server-side-encryption\": \"AES256\"},\r
@@ -77,7 +76,6 @@
                         'AWSAccessKeyId' => $access_key_id,
                         'acl' => $acl,
                         'success_action_status' => '201',
-                        'success_action_redirect' => "http://$bucket.s3.amazonaws.com/",
                         'XAmzMetaTag' => '',
                         'ContentType' => 'image',
                         'XAmzMetaUuid' => '14365123651274',
