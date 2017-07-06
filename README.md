@@ -22,7 +22,7 @@ For this tool we will need two buckets. The first one is for uploading images di
     <!-- Sample policy -->
     <CORSConfiguration>
     	<CORSRule>
-    		<AllowedOrigin>http://mydomain.com</AllowedOrigin>
+    		<AllowedOrigin>*</AllowedOrigin>
     		<AllowedMethod>POST</AllowedMethod>
     		<MaxAgeSeconds>3000</MaxAgeSeconds>
     		<AllowedHeader>*</AllowedHeader>
@@ -42,7 +42,7 @@ The second bucket is for storing the images that are resized by Lambda.
 ```
 <CORSConfiguration>
 	<CORSRule>
-		<AllowedOrigin>http://mydomain.com</AllowedOrigin>
+		<AllowedOrigin>*</AllowedOrigin>
 		<AllowedMethod>GET</AllowedMethod>
 		<MaxAgeSeconds>3000</MaxAgeSeconds>
 		<AllowedHeader>*</AllowedHeader>
@@ -103,7 +103,7 @@ On the next page you should see the Access key ID and Secret access key for the 
 
 ### (Optional) Build the Lambda Function Code in Node.js
 
-You can use the included zip file, or build the Lambda function that will resize our images for us as they get uploaded by hand.
+You can use the included zip file, but there is a good chance you'll want to do something other than resize the image to 620px wide. So you'll want to modify and build the Lambda function by hand.
 
 1. `cd` into the `lambda_function` directory in this project
 1. Run `npm install --prefix . aws-sdk gm async` to install the dependent modules.
