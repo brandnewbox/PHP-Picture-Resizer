@@ -1,41 +1,30 @@
-.drop-zone {
-  border: 1pt dashed black;
-  height: 100px;
-  width: 100%;
+#dropzone {
+  -webkit-transition: height 0.5s ease;
+  -moz-transition: height 0.5s ease;
+  -ms-transition: height 0.5s ease;
+  -o-transition: height 0.5s ease;
+  transition: height 0.5s ease;
+
+  background: #ddd;
   font-size: 25px;
   font-weight:bold;
+  text-align:center;
+  padding:50px;
+  -webkit-border-radius: 15px;
+  border-radius: 15px;
+  height: 150px;
 }
 
-.file-available {
-  height: 300px;
-  font-size: 50px;
+#dropzone input {display:none;}
+
+.overdocument {
+  height: 300px !important;
 }
 
-.drop-zone:active {
-  background-color: #DDDDDD;
+.overdropzone {
+  background-color: #aaa !important;
 }
 
 .progress-bar {
   background-color: #337ab7;
-}
-
-.progress-bar-thing,
-.download-bar {
-  height: 50px;
-  font-weight:bold;
-  font-size:25px;
-  padding-left:0;
-  padding-right:0;
-}
-
-.progress-title {
-  padding-top:8px;
-  padding-left:0;
-  font-size:25px;
-  font-weight:bold;
-}
-
-.progress-filename {
-  padding-top:12px;
-  font-size:20px;
 }
